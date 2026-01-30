@@ -1,0 +1,36 @@
+import { useNavigate } from "react-router";
+
+
+
+const Nav = () => {
+    const navigate = useNavigate();
+
+    return (
+        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+            <div className="container-fluid">
+                <a type="button" className="navbar-brand" style={{"cursor":"pointer"}} onClick={() => navigate("/")}>TEAM2</a>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarNav">
+                    <ul className="navbar-nav" me-auto="true">
+                        <li className="nav-item">
+                            <button type="button" className="nav-link" onClick={() => navigate("/user/login")}>로그인</button>
+                        </li>
+                        <li className="nav-item">
+                            <button type="button" className="nav-link" >로그아웃</button>
+                        </li>
+                        <li className="nav-item">
+                            <button type="button" className="nav-link" onClick={() => navigate("/user/signup")}>회원가입</button>
+                        </li>
+                        <li className="nav-item">
+                            <button type="button" className="nav-link" onClick={() => navigate("/user/userview")}>회원정보</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    )
+}
+
+export default Nav;
