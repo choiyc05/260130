@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router";
 import { list } from "@data/data.js"
+import { useState, useEffect } from 'react'
 import BoardTable from "@assets/BoardTable";
+import { api } from '@utils/network.js'
+import { useAuth } from '@hooks/AuthProvider.jsx'
 
 const Home = () => {
     const navigate = useNavigate();

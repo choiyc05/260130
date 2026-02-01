@@ -1,35 +1,71 @@
 import { useNavigate } from "react-router";
+import { useState, useEffect } from 'react'
+import { useAuth } from '@hooks/AuthProvider.jsx'
+import { useCookies } from 'react-cookie';
+import { api } from '@utils/network.js'
 
 const BoardAdd = () => {
+	const { checkAuth } = useAuth()
 	const navigate = useNavigate();
+	const [title, setTitle] = useState("")
+	const [content, setContent] = useState("")
 
-    return (
-        <div className="container mt-3">
+	const [cookies, setCookie, removeCookie] = useCookies(['backUp']);
+
+	const submitEvent = e => {
+		e.preventDefault()
+		console.log(`제목 : ${title}, 내용 : ${content}`)
+		removeCookie('backUp');
+	}
+
+	useEffect(() => {
+		api.post('/backup', cookies.backUp)
+			.then(res => {
+				if (res.data.backup) {
+					setTitle(res.data.title)
+					setContent(res.data.content)
+					console.log("백업 완료");
+				}
+			})
+	},[])
+
+
+	useEffect(() => {
+		if (!checkAuth()) navigate("/");
+
+		const timer = setTimeout(() => {
+			if (title || content) {
+				setCookie('backUp', { title, content }, { path: '/', maxAge: 3600 });
+				console.log("임시 저장");
+			}
+		}, 500);
+		return () => clearTimeout(timer);
+
+	}, [title, content, setCookie])
+
+	return (
+		<div className="container mt-3">
 			<h1 className="display-1 text-center">게시글 작성</h1>
-			<form>
+			<form onSubmit={submitEvent}>
 				<div className="mb-3 mt-3">
 					<label htmlFor="title" className="form-label">제목</label>
-					<input type="text" className="form-control" id="title" placeholder="제목을 입력하세요." name="title" />
-				</div>
-				<div className="mb-3 mt-3">
-					<label htmlFor="name" className="form-label">작성자</label>
-					<input type="text" className="form-control" id="name" name="name" disabled />
+					<input type="text" className="form-control" id="title" placeholder="제목을 입력하세요." name="title" value={title} required={true} autoComplete='off' onChange={e => setTitle(e.target.value)} />
 				</div>
 				<div className="mb-3 mt-3">
 					<label htmlFor="content" className="form-label">내용</label>
-					<textarea type="text" className="form-control h-50" rows="10" placeholder="내용을 입력하세요." name="content"></textarea>
+					<textarea type="text" className="form-control h-50" rows="10" placeholder="내용을 입력하세요." name="content" value={content} onChange={e => setContent(e.target.value)}></textarea>
 				</div>
 				<div className="d-flex">
 					<div className="p-2 flex-fill d-grid">
 						<button type="submit" className="btn btn-primary">등록</button>
 					</div>
 					<div className="p-2 flex-fill d-grid">
-						<button type="button" onClick={()=>navigate("/")} className="btn btn-primary">취소</button>
+						<button type="button" onClick={() => navigate("/")} className="btn btn-primary">취소</button>
 					</div>
 				</div>
 			</form>
 		</div>
-    )
+	)
 }
 
 export default BoardAdd
